@@ -9,16 +9,13 @@ using static LifeformNeeds;
 
 public class Lifeform : MonoBehaviour
 {
-    float needsRate = 0.1f;
+    float needsRate = 0.5f;
     float productionRate = 0.01f;
     float timeToProduce = 0;
     int resilianceRate = 20;
 
-    //Add hex, assign lifeforms's hex on instantiate
-    //Move to hex
     public Hex hex;
-    //[SerializeField] Image indicator;
-    //[SerializeField] public Image indicatorIcon;
+    [SerializeField] public Image image;
 
     [Header("Requirements")]
     [SerializeField] bool requiresWater;
@@ -40,13 +37,17 @@ public class Lifeform : MonoBehaviour
     [SerializeField] Sprite[] Sprites;
 
     [Header("Currency")]
-    [SerializeField] int currencyProductionRate = 1; 
+    [SerializeField] public int currencyProductionRate = 1; 
     private int nextCurrencyProductionTime = 1;
-    [SerializeField] int cost;
+    [SerializeField] public int cost;
 
     GameManager gameManager;
 
-    void Start() {
+    void Awake() {
+        WakeUp();
+    }
+
+    public void WakeUp() {
         needs = new LifeformNeeds[] {
             new LifeformNeeds(LifeformNeeds.Need.Water.ToString(), 0, requiresWater, producesWater, Sprites[0]),
             new LifeformNeeds(LifeformNeeds.Need.Plants.ToString(), 0, requiresPlants, producesPlants, Sprites[1]),
@@ -59,7 +60,7 @@ public class Lifeform : MonoBehaviour
         GameObject obj = GameObject.Find("GameManager");
         gameManager = obj.GetComponent<GameManager>();
     }
-
+     
     void Update() {
         CalculateNeeds();
         CheckRequirements();
@@ -68,16 +69,14 @@ public class Lifeform : MonoBehaviour
 
     private void CheckProduction()
     {
+        //Execute every second
         if (Time.time >= nextCurrencyProductionTime)
         {
             Debug.Log(Time.time + ">=" + nextCurrencyProductionTime);
             nextCurrencyProductionTime = Mathf.FloorToInt(Time.time) + 1;
-        }
-
-        timeToProduce += (productionRate) * Time.deltaTime;
-        if (timeToProduce > 1) {
             gameManager.AddLifeCoins(currencyProductionRate);
-            foreach (LifeformNeeds need in needs) {
+            foreach (LifeformNeeds need in needs)
+            {
                 switch (need.name)
                 {
                     case "Water":
@@ -181,6 +180,7 @@ public class Lifeform : MonoBehaviour
             }
         }
         if (highestNeed.need > resilianceRate) {
+            hex.removeLifeform();
             Destroy(this.gameObject);
         }
     }

@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
     }
 
     void Update() {
-        coinText.text = lifeCoins.ToString();
+        coinText.text = lifeCoins.ToString("0,000,000"); 
     }
 
     //Other resources

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class LifeformNeeds
@@ -8,7 +9,7 @@ public class LifeformNeeds
     public bool produces;
     public Sprite sprite;
 
-    public enum Need { Water, Plants, Meat, Bugs, Biowaste, Fungi };
+    [Flags] public enum Need { Water=0, Plants=1, Meat=2, Bugs=3, Biowaste=4, Fungi=5 };
 
     public LifeformNeeds(string name, float need, bool requires, bool produces, Sprite sprite)
     {

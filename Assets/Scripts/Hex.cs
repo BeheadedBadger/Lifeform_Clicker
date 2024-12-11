@@ -1,6 +1,8 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class Hex : MonoBehaviour
 {
@@ -11,18 +13,32 @@ public class Hex : MonoBehaviour
     [SerializeField] public Image indicatorIcon;
     GameObject currentLifeform;
     GameManager gameManager;
+    [SerializeField] GameObject activeGraphics;
+    Lifeform lifeformscript;
+
 
     public void OnClick() {
         if (!active) {
-            store.ShowStore();
+            store.gameObject.SetActive(true);
+            store.ShowStore(this);
         };
+        if (active)
+        {
+            lifeformscript.OnClick();
+        }
     }
 
-    public void addLifeform(int id) {
-        GameObject lifeform = Instantiate(gameManager.lifeforms[id], LifeFormHolder.transform);
-        currentLifeform = lifeform;
-        currentLifeform.GetComponent<Lifeform>().hex = this;
-        SetActive();
+    public void addLifeform(GameObject lifeform) {
+        if (!active) {
+            currentLifeform = lifeform;
+            currentLifeform.GetComponent<Lifeform>().hex = this;
+
+            GameObject inst = Instantiate(lifeform, LifeFormHolder.transform);
+            Lifeform lifeformscript = lifeform.GetComponent<Lifeform>();
+            lifeformscript.hex = this;
+
+            SetActive();
+        }
     }
 
     public void removeLifeform() {
@@ -31,12 +47,11 @@ public class Hex : MonoBehaviour
     }
 
     public void SetActive() { 
-        active = true; 
-        //Graphics active true
-        //Graphics inactive false
+        active = true;
+        activeGraphics.SetActive(true);
     }
     public void SetInactive() { 
-        active = false; 
-        //viceversa
+        active = false;
+        activeGraphics.SetActive(false);
     }
 }
